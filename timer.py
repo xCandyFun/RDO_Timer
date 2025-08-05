@@ -2,12 +2,16 @@ import time
 import threading
 import tkinter as tk
 import keyboard
+import sys
+import os
 from pynput import mouse
 from pynput.mouse import Button
 
 timer_running = False
 start_time = None
 overlay_window = None
+exit_flag = False
+mouse_listener = None
 
 def toggle_timer():
     global timer_running, start_time
@@ -75,20 +79,39 @@ def on_click(x, y, button, pressed):
         elif button == Button.x2:
             reset_timer()
 
+def exit_program():
+    global overlay_window, exit_flag, mouse_listener
+    print("Exiting...")
+
+    exit_flag = True
+
+    try:
+        if mouse_listener:
+            mouse_listener.stop()
+        if overlay_window:
+            overlay_window.destroy()
+    except Exception as e:
+        print(f"Error during exit: {e}")
+
+    os._exit(0)
+
 def listen_for_hotkey():
     keyboard.add_hotkey("F9", toggle_timer)
     keyboard.add_hotkey("F10", reset_timer)
+    keyboard.add_hotkey("right shift", exit_program)
     print("Press F9 to start/stop the timer.")
     print("Press F10 to reset the timer.")
 
-    mouse.Listener(on_click=on_click).start()
+    mouse_Listener = mouse.Listener(on_click=on_click)
+    mouse_Listener.start()
 
-    keyboard.wait()
+    while not exit_flag:
+        time.sleep(0.1)
 
 threading.Thread(target=create_overlay, daemon=True).start()
 threading.Thread(target=listen_for_hotkey, daemon=True).start()
 
-while True:
+while not exit_flag:
     time.sleep(1)
 
 
