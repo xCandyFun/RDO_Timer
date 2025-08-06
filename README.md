@@ -36,6 +36,7 @@ pip install pynput keyboard
 |----------------|--------------------|
 | Start/Stop     | `F9` or `Mouse X1` |
 | Reset Timer    | `F10` or `Mouse X2` |
+| Exit Program   | **Right Shift**     |
 
 ## 📁 File Structure
 
