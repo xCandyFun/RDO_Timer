@@ -89,27 +89,31 @@ def exit_program():
         if mouse_listener:
             mouse_listener.stop()
         if overlay_window:
-            overlay_window.destroy()
+            overlay_window.after(0, overlay_window.quit)
     except Exception as e:
         print(f"Error during exit: {e}")
 
-    os._exit(0)
+    #os._exit(0)
+    sys.exit(0)
 
 def listen_for_hotkey():
+    global mouse_listener
     keyboard.add_hotkey("F9", toggle_timer)
     keyboard.add_hotkey("F10", reset_timer)
     keyboard.add_hotkey("right shift", exit_program)
     print("Press F9 to start/stop the timer.")
     print("Press F10 to reset the timer.")
 
-    mouse_Listener = mouse.Listener(on_click=on_click)
-    mouse_Listener.start()
+    mouse_listener = mouse.Listener(on_click=on_click)
+    mouse_listener.start()
 
     while not exit_flag:
         time.sleep(0.1)
 
-threading.Thread(target=create_overlay, daemon=True).start()
+overlay_thread = threading.Thread(target=create_overlay)
+overlay_thread.start()
 threading.Thread(target=listen_for_hotkey, daemon=True).start()
+overlay_thread.join()
 
 while not exit_flag:
     time.sleep(1)
