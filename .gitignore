@@ -2,3 +2,5 @@ build
 dist
 AlarmClock.ico
 timer.spec
+timer_settings.json
+*.pyc

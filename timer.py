@@ -9,6 +9,8 @@ from pynput.mouse import Button
 
 from timer_menu import OverlayMenuSettings
 
+OverlayMenuSettings.load_settings()
+
 timer_running = False
 start_time = None
 overlay_window = None
@@ -65,9 +67,14 @@ def create_overlay():
     root.geometry("+100+100")
     root.configure(bg='black')
     root.wm_attributes("-transparentcolor", "black")
-    root.wm_attributes("-alpha", 0.7)
+    root.wm_attributes("-alpha", OverlayMenuSettings.last_transparency)
 
-    label = tk.Label(root, text="Stopped", font=("Helvetica", 24), fg="lime", bg="black")
+    label = tk.Label(root, 
+                     text="Stopped", 
+                     font=("Helvetica", OverlayMenuSettings.last_font_size), 
+                     fg=OverlayMenuSettings.last_color, 
+                     bg="black"
+                     )
     label.pack()
     root.label = label
 

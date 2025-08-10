@@ -1,10 +1,41 @@
 import tkinter as tk
+import json
+import os
+
+SETTINGS_FILE = "timer_settings.json"
 
 class OverlayMenuSettings:
 
     last_color = "lime"
     last_font_size = 24
     last_transparency = 0.7
+
+    @staticmethod
+    def load_settings():
+        """Load settings from JSON file."""
+        if os.path.exists(SETTINGS_FILE):
+            try:
+                with open(SETTINGS_FILE, "r") as f:
+                    data = json.load(f)
+                OverlayMenuSettings.last_color = data.get("color", "lime")
+                OverlayMenuSettings.last_font_size = data.get("font_size", 24)
+                OverlayMenuSettings.last_transparency = data.get("transparency", 0.7)
+            except Exception as e:
+                print(f"Error loading settings: {e}")
+
+    @staticmethod
+    def save_settigns():
+        """Save settings to JSON file."""
+        try:
+            data = {
+                "color": OverlayMenuSettings.last_color,
+                "font_size": OverlayMenuSettings.last_font_size,
+                "transparency": OverlayMenuSettings.last_transparency
+            }
+            with open(SETTINGS_FILE, "w") as f:
+                json.dump(data, f)
+        except Exception as e:
+            print(f"Error saving settings: {e}")
 
     @staticmethod
     def open_settings_menu(overlay_window, exit_callback):
@@ -41,6 +72,11 @@ class OverlayMenuSettings:
         # --- Apply Button ---
         def apply_changes():
             try:
+                new_font_size = int(font_size_var.get())
+                new_transparency = float(transparency_var.get())
+                if not (0.1 <= new_transparency <= 1.0):
+                    raise ValueError("Transparency must be between 0.1 and 1.0")
+
                 OverlayMenuSettings.last_color = color_var.get()
                 OverlayMenuSettings.last_font_size = font_size_var.get()
                 OverlayMenuSettings.last_transparency = transparency_var.get()
@@ -50,8 +86,9 @@ class OverlayMenuSettings:
                     font=("Helvetica", font_size_var.get())
                 )
                 overlay_window.attributes("-alpha", transparency_var.get())
+                OverlayMenuSettings.save_settigns()
             except Exception as e:
                 print(f"Error applying changes: {e}")
 
         tk.Button(settings_win, text="Apply", command=apply_changes).pack(pady=10)
-        tk.Button(settings_win, text="Exit", command=exit_callback).pack(pady=10)
+        tk.Button(settings_win, text="Exit the Overlay", command=exit_callback).pack(pady=10)
