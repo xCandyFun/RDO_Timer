@@ -7,6 +7,8 @@ import os
 from pynput import mouse
 from pynput.mouse import Button
 
+from timer_menu import OverlayMenuSettings
+
 timer_running = False
 start_time = None
 overlay_window = None
@@ -101,8 +103,11 @@ def listen_for_hotkey():
     keyboard.add_hotkey("F9", toggle_timer)
     keyboard.add_hotkey("F10", reset_timer)
     keyboard.add_hotkey("right shift", exit_program)
+    keyboard.add_hotkey("F12", lambda: OverlayMenuSettings.open_settings_menu(overlay_window, exit_program))
+
     print("Press F9 to start/stop the timer.")
     print("Press F10 to reset the timer.")
+    print("Press F12 to open Settings menu.")
 
     mouse_listener = mouse.Listener(on_click=on_click)
     mouse_listener.start()
